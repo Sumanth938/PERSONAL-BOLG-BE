@@ -116,7 +116,8 @@ async def get_all_articles(sort_by: Optional[int] = None,page: Optional[int] = 1
                 "posted_by": get_user_fullname_by_id(article.owner_id),
                 "created_at": article.created_date,
                 "updated_at": article.modified_date,
-                "created_by":article.created_by
+                "created_by":article.created_by,
+                "owner_id":article.owner_id
             }
             for article in query
         ]
