@@ -144,6 +144,44 @@ async def get_all_articles(sort_by: Optional[int] = None,page: Optional[int] = 1
         if session:
             session.close()
 
+@router.get("/authors")
+async def get_all_authors():
+    """
+    Retrieve all distinct authors who own articles with their IDs.
+
+    Returns:
+    -------
+    JSONResponse - A JSON response containing authors' data.
+    """
+    session = None
+    try:
+        session = Session()
+
+        # Fetch all distinct authors (users) who have articles
+        authors = (
+            session.query(User.id, User.name)
+            .join(Articles, Articles.owner_id == User.id)
+            .filter(Articles.is_active == True,User.is_active == True)
+            .distinct()
+            .all()
+        )
+
+        # Format the response
+        authors_data = [{"id": author.id, "name": author.name} for author in authors]
+
+        return {
+            "message": "SUCCESSFUL",
+            "data": authors_data,
+            "status": 200,
+        }
+    except Exception as error:
+        raise HTTPException(
+            status_code=500, detail=f"Error occurred while fetching authors: {str(error)}"
+        )
+    finally:
+        if session:
+            session.close()
+
 @router.get("/user_articles")
 async def user_articles(page: Optional[int] = 1, size: Optional[int] = 20,user: dict = Depends(get_current_user)):
     """
