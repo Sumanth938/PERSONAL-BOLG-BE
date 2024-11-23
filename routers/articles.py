@@ -64,7 +64,7 @@ def get_user_fullname_by_id(id):
             session.close()
 
 @router.get("/")
-async def get_all_articles(sort_by: Optional[int] = None,page: Optional[int] = 1, size: Optional[int] = 20,user_id:Optional[int]=None):
+async def get_all_articles(sort_by: Optional[int] = None,page: Optional[int] = 1, size: Optional[int] = 20,user_id:Optional[int]=None,logined_user_id:Optional[int]=None):
     """
     Retrieve all active articles with optional sorting and pagination.
 
@@ -88,6 +88,9 @@ async def get_all_articles(sort_by: Optional[int] = None,page: Optional[int] = 1
 
         if user_id:
             query=query.filter(Articles.owner_id == user_id)
+        
+        if logined_user_id:
+            query=query.filter(Articles.owner_id != logined_user_id)
 
         if sort_by:
             if sort_by != 1 and sort_by != 2:
